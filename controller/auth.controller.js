@@ -84,3 +84,40 @@ export const userLogin = async (req, res) => {
       .send({ message: "Error logging in", success: false });
   }
 };
+
+export const googleLogIn = async (req, res) => {
+  const existingUser = await User.findOne({ email: req.body.email });
+  if (!existingUser) {
+    const token = jwt.sign({ user: existingUser }, process.env.JWT_TOKEN);
+    return res
+      .cookie("token", token, {
+        httpOnly: true,
+        sameSite: "none",
+        secure: true,
+      })
+      .json({ user: existingUser, success: true });
+  }
+  try {
+    const randomPass = existingUser.email;
+    const hashedPassword = await bcryptjs.hash(randomPass, 8);
+    const newUser = await User.create({
+      userName,
+      email,
+      password: hashedPassword,
+      profilePicture,
+    });
+    await newUser.save();
+    const token = jwt.sign({ user: existingUser }, process.env.JWT_TOKEN);
+    return res
+      .cookie("token", token, {
+        httpOnly: true,
+        sameSite: "none",
+        secure: true,
+      })
+      .json({ success: true, user: existingUser });
+  } catch (error) {
+    return res
+      .status(500)
+      .send({ message: "Error logging in", success: false });
+  }
+};
