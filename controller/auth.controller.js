@@ -86,8 +86,10 @@ export const userLogin = async (req, res) => {
 };
 
 export const googleLogIn = async (req, res) => {
+  console.log(req.body);
   const existingUser = await User.findOne({ email: req.body.email });
-  if (!existingUser) {
+  console.log(existingUser);
+  if (existingUser) {
     const token = jwt.sign({ user: existingUser }, process.env.JWT_TOKEN);
     return res
       .cookie("token", token, {
@@ -96,28 +98,33 @@ export const googleLogIn = async (req, res) => {
         secure: true,
       })
       .json({ user: existingUser, success: true });
-  }
-  try {
-    const randomPass = existingUser.email;
-    const hashedPassword = await bcryptjs.hash(randomPass, 8);
-    const newUser = await User.create({
-      userName,
-      email,
-      password: hashedPassword,
-      profilePicture,
-    });
-    await newUser.save();
-    const token = jwt.sign({ user: existingUser }, process.env.JWT_TOKEN);
-    return res
-      .cookie("token", token, {
-        httpOnly: true,
-        sameSite: "none",
-        secure: true,
-      })
-      .json({ success: true, user: existingUser });
-  } catch (error) {
-    return res
-      .status(500)
-      .send({ message: "Error logging in", success: false });
+  } else {
+    try {
+      const randomPass = "abcded";
+      console.log(randomPass);
+      const hashedPassword = await bcryptjs.hash(randomPass, 8);
+      const newUser = await User.create({
+        userName: req.body.userName,
+        email: req.body.email,
+        password: hashedPassword,
+        profilePicture: req.body.profilePicture,
+        isAdmin: req.body.isAdmin || User.schema.paths.isAdmin.default(),
+        role: req.body.role || User.schema.paths.role.default(),
+      });
+      await newUser.save();
+      const token = jwt.sign({ user: existingUser }, process.env.JWT_TOKEN);
+      return res
+        .cookie("token", token, {
+          httpOnly: true,
+          sameSite: "none",
+          secure: true,
+        })
+        .json({ success: true, user: newUser });
+    } catch (error) {
+      console.log(error);
+      return res
+        .status(500)
+        .send({ message: "Error logging in", success: false });
+    }
   }
 };
