@@ -26,7 +26,7 @@ export const userUpdate = async (req, res) => {
       },
       { new: true }
     );
-    console.log(updatedUser);
+    // console.log(updatedUser);
     return res.status(200).send({
       message: "User updated successfully",
       success: true,
@@ -36,5 +36,22 @@ export const userUpdate = async (req, res) => {
     return res
       .status(500)
       .send({ message: "Error updating user", success: false });
+  }
+};
+
+export const userLogOut = async (req, res) => {
+  const validUser = await User.find({ _id: req.params.id });
+  if (!validUser) {
+    return res.status(401).send({ message: "User not found", success: false });
+  }
+  try {
+    return res
+      .clearCookie("token")
+      .status(200)
+      .send({ message: "User logged out successfully", success: true });
+  } catch (error) {
+    return res
+      .status(500)
+      .send({ message: "Error logging out", success: false });
   }
 };
