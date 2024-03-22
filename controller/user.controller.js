@@ -55,3 +55,21 @@ export const userLogOut = async (req, res) => {
       .send({ message: "Error logging out", success: false });
   }
 };
+
+export const deleteUser = async (req, res) => {
+  const validUser = await User.find({ _id: req.params.id });
+  if (!validUser) {
+    return res.status(401).send({ message: "User not found", success: false });
+  }
+  try {
+    const result = await User.deleteOne({ _id: req.params.id });
+    return res
+      .clearCookie("token")
+      .status(200)
+      .send({ message: "User deleted successfully", success: true });
+  } catch (error) {
+    return res
+      .status(500)
+      .send({ message: "Error deleting user", success: false });
+  }
+};
