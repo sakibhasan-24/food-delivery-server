@@ -7,6 +7,14 @@ const itemSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+    userEmail: {
+      type: String,
+      required: true,
+    },
+    userId: {
+      type: String,
+      required: true,
+    },
     description: {
       type: String,
       required: true,
@@ -49,7 +57,7 @@ const itemSchema = new mongoose.Schema(
       required: true,
     },
 
-    images: {
+    image: {
       type: Array,
       required: true,
     },
@@ -58,10 +66,8 @@ const itemSchema = new mongoose.Schema(
       required: true,
       default: false,
     },
-    offerPrice: {
+    offerPercentage: {
       type: Number,
-      required: true,
-      default: 10,
     },
   },
   { timestamps: true }

@@ -5,6 +5,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import userAuthRouter from "./routes/auth.routes.js";
 import userRoute from "./routes/user.routes.js";
+import itemRoutes from "./routes/item.routes.js";
 // import("dotenv").config();
 dotenv.config();
 const app = express();
@@ -29,6 +30,7 @@ mongoose
 
 app.use("/api/user", userAuthRouter);
 app.use("/api/user", userRoute);
+app.use("/api/food", itemRoutes);
 app.get("/", (req, res) => res.send("Hello World!"));
 app.listen(port, () => console.log(`Example app listening on port ${port}!`));
 
